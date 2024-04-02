@@ -1,31 +1,53 @@
 import numpy as np
 
+Characters = ["'",  ' ', 'q', 'é', 'ã', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'z', 'x', 'c', 'v', 'b', 'n', 'm', 'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '<', '>', ',', '!', '.', '"', '#', '$', '%', '&', '/', '(', ')', '¹', '@', '£', '§', '½', '¬', '{', '[', ']', '?', '}', ';', '.', ':', '-', '_', '~', '^', '+', '*']
+# Unique characters that occur in the text
+chars = sorted(list(set(Characters)))
+vocab_size = len(chars)
+
+# create a mapping from characters to integers
+stoi = { char:int_ for int_,char in enumerate(chars) }
+itos = { int_:char for int_,char in enumerate(chars) }
+encode = lambda s: [stoi[c] for c in s] # encoder: take a string, output a list of integers
+decode = lambda l: ''.join([itos[i] for i in l]) # decoder: take a list of integers, output a string
+
+
+Objective_phrase = "This genetic algorithm ain't bad!"
+print(len(Objective_phrase))
+print(encode(Objective_phrase))
+
 # Define parameters
 population_size = 100
-vector_length = 100
-mutation_rate = 0.25
-num_generations = 1000
-num_parents = int(population_size*0.6)
+vector_length = len(Objective_phrase)
+mutation_rate = 0.01
+num_generations = 10000
+num_parents = int(population_size*0.8)
 
 # Initialize population
-population = np.random.randint(2, size=(population_size, vector_length))
+population = np.random.randint(0, vocab_size, size=(population_size, vector_length))
 
+def fitness_function(phrase, objective_phrase):
+    sum_phrase = 0
+    for i,k in zip(phrase, encode(objective_phrase)):
+        if i == k:
+            sum_phrase += 1
 
-def fitness_function(vector):
-    return np.sum(vector)
+    return sum_phrase
 
 def mutate(individual, mutation_rate):
     mutated_individual = individual.copy()
     for i in range(len(mutated_individual)):
         if np.random.rand() < mutation_rate:
-            mutated_individual[i] += np.random.uniform(low=-0.1, high=0.1)
+            mutated_individual[i] = np.random.randint(0, vocab_size)
     return mutated_individual
 
-best_individual_idx = np.argmax(np.apply_along_axis(fitness_function, 1, population))
+best_individual_idx = np.argmax(np.apply_along_axis(fitness_function, 1, population, objective_phrase=Objective_phrase))
 best_individual = population[best_individual_idx]
-best_fitness = fitness_function(best_individual)
+best_fitness = fitness_function(best_individual, Objective_phrase)
 
 best_fitness_every_generation = []
+best_fitness_ever = 0
+written_solutions = []
 best_fitness_ever = best_fitness
 
 
@@ -36,9 +58,10 @@ for generation in range(num_generations):
     previous_best_individual_idx = best_individual_idx
     previous_best_individual = best_individual
     previous_best_fitness = best_fitness
+    previous_best_fitness_ever = best_fitness_ever
 
     # Evaluate fitness
-    fitness_values = np.apply_along_axis(fitness_function, 1, population)
+    fitness_values = np.apply_along_axis(fitness_function, 1, population, objective_phrase=Objective_phrase)
     
     # Choosing the best parents
     # Building a dicionary with the population vectors and its fitness values
@@ -92,24 +115,33 @@ for generation in range(num_generations):
 
     print(f'\nFinish iteration: {generation}')
 
-    best_individual_idx = np.argmax(np.apply_along_axis(fitness_function, 1, population))
+    best_individual_idx = np.argmax(np.apply_along_axis(fitness_function, 1, population, objective_phrase=Objective_phrase))
     best_individual = population[best_individual_idx]
-    best_fitness = fitness_function(best_individual)
+    best_fitness = fitness_function(best_individual, Objective_phrase)
     best_fitness_every_generation.append(round(best_fitness,2))
     best_fitness_ever = max(best_fitness_every_generation)
 
     if best_fitness > previous_best_fitness:
+        print(decode(best_individual))
         print('Best fitness ever:', best_fitness_ever)
+
+    if best_fitness > previous_best_fitness_ever:
+        written_solutions.append(decode(best_individual))
+    
+    if best_fitness_ever == vector_length:
+        break
+
         
 
 # Find best individual in final population
-best_individual_idx = np.argmax(np.apply_along_axis(fitness_function, 1, population))
+best_individual_idx = np.argmax(np.apply_along_axis(fitness_function, 1, population, objective_phrase=Objective_phrase))
 best_individual = population[best_individual_idx]
-best_fitness = fitness_function(best_individual)
+best_fitness = fitness_function(best_individual, Objective_phrase)
 best_fitness_every_generation.append(round(best_fitness,2))
 best_fitness_ever = max(best_fitness_every_generation)
 
-print("Best solution:", best_individual)
+print("Best solution:", decode((best_individual)))
 print("Best fitness:", best_fitness)
 print('Best fitness ever:', best_fitness_ever)
 print('Every best fitness of every generation',best_fitness_every_generation)
+print('Best written solutions: ', written_solutions)
