@@ -28,9 +28,6 @@ best_fitness = fitness_function(best_individual)
 best_fitness_every_generation = []
 best_fitness_ever = best_fitness
 
-print("Best solution:", best_individual)
-print("Best fitness:", best_fitness)
-
 
 # Genetic Algorithm
 for generation in range(num_generations):
