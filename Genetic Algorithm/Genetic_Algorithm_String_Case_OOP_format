@@ -1,0 +1,41 @@
+import numpy as np
+
+Characters = ["'",  ' ', 'q', 'é', 'ã', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'z', 'x', 'c', 'v', 'b', 'n', 'm', 'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '<', '>', ',', '!', '.', '"', '#', '$', '%', '&', '/', '(', ')', '¹', '@', '£', '§', '½', '¬', '{', '[', ']', '?', '}', ';', '.', ':', '-', '_', '~', '^', '+', '*']
+# Unique characters that occur in the text
+chars = sorted(list(set(Characters)))
+vocab_size = len(chars)
+
+# create a mapping from characters to integers
+stoi = { char:int_ for int_,char in enumerate(chars) }
+itos = { int_:char for int_,char in enumerate(chars) }
+encode = lambda s: [stoi[c] for c in s] # encoder: take a string, output a list of integers
+decode = lambda l: ''.join([itos[i] for i in l]) # decoder: take a list of integers, output a string
+
+def fitness_function(phrase, objective_phrase):
+    sum_phrase = 0
+    for i,k in zip(phrase, encode(objective_phrase)):
+        if i == k:
+            sum_phrase += 1
+
+    return sum_phrase
+
+class chromosome:
+    def __init__(self, chromosome_length):
+        self.vector = np.random.randint(0, chromosome_length)
+        self.best_individual =self.vector.copy()
+        self.best_fitness = 0
+
+
+    def mutation(self, mutation_rate, chromosome_length):
+        for i in range(len(self.vector)):
+            if np.random.rand() < mutation_rate:
+                self.vector[i] = np.random.randint(0, chromosome_length) 
+
+    
+    def evaluate_fitness(self, objective_phrase):
+        self.fitness = fitness_function(self.vector,objective_phrase)
+        if self.fitness > self.best_fitness:
+            self.best_individual = self.vector.copy()
+            self.best_fitness = self.fitness
+
+
