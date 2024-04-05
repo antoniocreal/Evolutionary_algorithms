@@ -46,7 +46,6 @@ best_individual = population[best_individual_idx]
 best_fitness = fitness_function(best_individual, Objective_phrase)
 
 best_fitness_every_generation = []
-best_fitness_ever = 0
 written_solutions = []
 best_fitness_ever = best_fitness
 

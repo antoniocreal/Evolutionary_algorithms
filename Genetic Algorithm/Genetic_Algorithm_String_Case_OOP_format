@@ -1,5 +1,81 @@
 import numpy as np
 
+class chromosome:
+    def __init__(self, chromosome_length, objective_phrase):
+        self.vector = np.random.randint(0, chromosome_length)
+        self.best_individual =self.vector.copy()
+        self.best_fitness = fitness_function(self.best_individual, objective_phrase)
+
+
+    def mutation(self, mutation_rate, chromosome_length):
+        for i in range(len(self.vector)):
+            if np.random.rand() < mutation_rate:
+                self.vector[i] = np.random.randint(0, chromosome_length) 
+
+    
+    def evaluate_fitness(self, objective_phrase):
+        self.fitness = fitness_function(self.vector,objective_phrase)
+        if self.fitness > self.best_fitness:
+            self.best_individual = self.vector.copy()
+            self.best_fitness = self.fitness
+
+
+class GA:
+    def __init__(self, population_size, vector_length, mutation_rate, num_generations, num_parents):
+        self.population_size = population_size
+        self.vector_length = vector_length
+        self.mutation_rate = mutation_rate
+        self.num_generations = num_generations
+        self.num_parents = num_parents
+        self.global_best_fitness = 0 
+        self.population = [chromosome(population_size) for _ in range(population_size)]
+    
+    def parents_determination(self, fitness_values, num_parents):
+        dict_fitness_values_population ={}
+        for vector,vector_value in zip(self.population, fitness_values):
+            dict_fitness_values_population[tuple(vector)] = vector_value
+        
+        dict_fitness_values_population = dict(sorted(dict_fitness_values_population.items(), key=lambda item: item[1], reverse=True))
+
+        parents = np.array(list(dict_fitness_values_population.keys())[:num_parents])
+
+        # Reshape parents array to ensure it has 3D structure
+        parents = parents.reshape(-1, len(parents), self.vector_length)
+        
+        return parents
+    
+    def offspring_determination(self, parents):
+            # Initialize empty offspring array
+        offspring = np.empty((0, self.vector_length))
+        while len(offspring) < self.population_size:
+            # Perform multiple crossovers until desired number of offspring is reached
+            # Perform crossover (single-point crossover)
+            # Choosing the point of crossover
+            crossover_point = np.random.randint(2, self.vector_length)
+
+            # The vector is contituted by the first parent genes from the first gene until the crossover point and by the second parent genes from the crossover point until the last gene
+            first_parent = np.random.randint(0, self.num_parents)
+            second_parent = np.random.randint(0, self.num_parents)
+
+            while first_parent == second_parent:
+                second_parent = np.random.randint(0,self.num_parents)
+
+            offspring_1 = np.concatenate((parents[:, first_parent, :crossover_point], parents[:, second_parent, crossover_point:]), axis=1) 
+            offspring_1 = offspring_1.reshape(1, -1) # Needed for the concatenation
+            offspring_2 = np.concatenate((parents[:, second_parent, :crossover_point], parents[:, first_parent, crossover_point:]), axis=1) 
+            offspring_2 = offspring_2.reshape(1, -1) # Needed for the concatenation
+
+            # Add the offspring from the single point crossover to the array
+            offspring_1_2 =np.concatenate((offspring_1,offspring_2), axis=0)
+            offspring = np.concatenate((offspring, offspring_1_2), axis=0)
+
+
+    def optimize(self):
+
+
+
+
+
 Characters = ["'",  ' ', 'q', 'é', 'ã', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'z', 'x', 'c', 'v', 'b', 'n', 'm', 'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '<', '>', ',', '!', '.', '"', '#', '$', '%', '&', '/', '(', ')', '¹', '@', '£', '§', '½', '¬', '{', '[', ']', '?', '}', ';', '.', ':', '-', '_', '~', '^', '+', '*']
 # Unique characters that occur in the text
 chars = sorted(list(set(Characters)))
@@ -18,24 +94,3 @@ def fitness_function(phrase, objective_phrase):
             sum_phrase += 1
 
     return sum_phrase
-
-class chromosome:
-    def __init__(self, chromosome_length):
-        self.vector = np.random.randint(0, chromosome_length)
-        self.best_individual =self.vector.copy()
-        self.best_fitness = 0
-
-
-    def mutation(self, mutation_rate, chromosome_length):
-        for i in range(len(self.vector)):
-            if np.random.rand() < mutation_rate:
-                self.vector[i] = np.random.randint(0, chromosome_length) 
-
-    
-    def evaluate_fitness(self, objective_phrase):
-        self.fitness = fitness_function(self.vector,objective_phrase)
-        if self.fitness > self.best_fitness:
-            self.best_individual = self.vector.copy()
-            self.best_fitness = self.fitness
-
-
