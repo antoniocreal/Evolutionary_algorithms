@@ -1,22 +1,5 @@
 import numpy as np
 
-# class chromosome:
-#     def __init__(self, chromosome_length, vocab_size, objective_phrase):
-#         self.individual = np.random.randint(0, vocab_size, size=chromosome_length)
-#         self.objective_phrase = objective_phrase
-#         self.fitness = 0
-
-#     def mutation(chromosome, mutation_rate, chromosome_length, vocab_size):
-#         print('chromosome',chromosome)
-#         for i in range(chromosome_length):
-#             if np.random.rand() < mutation_rate:
-#                 chromosome[i] = np.random.randint(0, vocab_size) 
-        
-#         return chromosome
-
-#     def evaluate_fitness(self, fitness_function):
-#         self.fitness = fitness_function(self.individual, self.objective_phrase)
-
 class Population:
     def __init__(self,chromosome_length, population_size, num_parents, objective_phrase, mutation_rate, vocab_size):
         self.chromosome_length = chromosome_length
@@ -29,11 +12,12 @@ class Population:
         self.best_individual = None # Population's best chromosome
         self.best_fitness = 0   # Best population's chromosome fitness
 
-    def evaluate_fitness(self, chromosome, fitness_function):
+    def evaluate_fitness(self, fitness_function):
+        # Evaluatig all the chromosomes' fitness in the population
         for chromosome in self.chromosomes:
-            print('chromosome: ', chromosome)
+            # print('chromosome: ', chromosome)
             chromosome_fitness = fitness_function(chromosome, self.objective_phrase)
-            print('chromosome fitness: ', chromosome_fitness)
+            # print('chromosome fitness: ', chromosome_fitness)
             if chromosome_fitness > self.best_fitness:
                 self.best_fitness = chromosome_fitness
                 self.best_individual = chromosome
@@ -51,7 +35,7 @@ class Population:
         dict_fitness_values_population = dict(sorted(dict_fitness_values_population.items(), key=lambda item: item[1], reverse=True))
 
         parents = np.array(list(dict_fitness_values_population.keys())[:self.num_parents])
-        print('There are {} parents'.format(len(parents)))
+        # print('There are {} parents'.format(len(parents)))
 
         # Reshape parents array to ensure it has 3D structure
         parents = parents.reshape(-1, len(parents), self.chromosome_length)
@@ -59,7 +43,7 @@ class Population:
         return parents
 
     def mutation(self, chromosome):
-        print('chromosome',chromosome)
+        # print('chromosome',chromosome)
         mutated_chromosome = chromosome.copy()
         for i in range(self.chromosome_length):
             if np.random.rand() < self.mutation_rate:
@@ -115,53 +99,51 @@ class GA:
         self.num_parents = num_parents
         self.objective_phrase = objective_phrase
         self.population = Population(self.chromosome_length,self.population_size,self.num_parents,self.objective_phrase, self.mutation_rate, self.vocab_size)
-        self.best_individual = None # Best chromosome
-        self.best_fitness = 0 #Fitness of the best chromosome of the current population
         self.best_fitness_every_generation = []
-        self.global_best_fitness = self.best_fitness
+        self.global_best_individual = self.population.best_individual
+        self.global_best_fitness = self.population.best_fitness
         self.written_solutions = []
 
     def optimize(self, fitness_function):
-        print('self.population: ', self.population)
-        for chromosome in self.population.chromosomes:
-            print('chromosome')
-            print(chromosome)
-
-        # Defining previous best solutions
-        previous_best_individual = self.best_individual
-        previous_best_fitness = self.best_fitness
-        previous_global_best_fitness= self.global_best_fitness
+        # print('self.population: ', self.population)
+        # for chromosome in self.population.chromosomes:
+            # print('chromosome')
+            # print(chromosome)
 
 
         for generation in range(self.num_generations):
             print('Generation: ', generation)
 
-            print('self.population:', self.population.chromosomes)
+            # print('self.population:', self.population.chromosomes)
 
             # Determine the parents for the next population
             parents = Population.parents_determination(self.population, fitness_function)
-            print('parents: ', parents)
+            # print('parents: ', parents)
 
             # Determine current population's offspring 
             offspring = Population.crossover(self.population, parents)
-            print('offspring', len(offspring), offspring)
-            print('self.population:', self.population)
+            # print('offspring', len(offspring), offspring)
+
+            # Updating the population
+            # print('Old self.population.chromosomes:', self.population.chromosomes)
+            self.population.chromosomes = offspring
+            # print('New self.population.chromosomes:', self.population.chromosomes)
 
             # Updates 
-            self.best_individual = self.population[self.best_individual_idx] # Best chromosome of the current population
-            self.best_fitness = self.best_individual.evaluate_fitness(self, chromosome, fitness_function) # Fitness of the best chromosome of the current population
-            self.best_fitness_every_generation.append(round(self.best_fitness,2))
+            Population.evaluate_fitness(self.population, fitness_function)
+            self.best_fitness_every_generation.append(round(self.population.best_fitness,2))
 
-            if self.best_fitness > self.global_best_fitness:
-                self.global_best_fitness = self.best_fitness
-                print(decode(self.best_fitness))
+            if self.population.best_fitness > self.global_best_fitness:
+                self.global_best_fitness = self.population.best_fitness
+                self.global_best_individual = self.population.best_individual
+                print(decode(self.population.best_individual))
                 print('Best fitness ever:', self.global_best_fitness)
-                self.written_solutions.append(decode(self.best_individual))
+                self.written_solutions.append(decode(self.population.best_individual))
             
             if self.global_best_fitness == self.chromosome_length:
                 break
         
-        return self.best_individual, self.best_fitness_every_generation, self.written_solutions, self.global_best_fitness
+        return self.global_best_individual, self.best_fitness_every_generation, self.written_solutions, self.global_best_fitness
 
 
 
@@ -189,7 +171,7 @@ def fitness_function(chromosome, objective_phrase):
 Objective_phrase = "This genetic algorithm ain't bad!"
 population_size = 100
 chromosome_length = len(Objective_phrase)
-mutation_rate = 0.2
+mutation_rate = 0.01
 num_generations = 10000
 num_parents = int(population_size*0.8)
 

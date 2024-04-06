@@ -61,7 +61,7 @@ for generation in range(num_generations):
 
     # Evaluate fitness
     fitness_values = np.apply_along_axis(fitness_function, 1, population, objective_phrase=Objective_phrase)
-    print('fitness_values', fitness_values)
+    # print('fitness_values', fitness_values)
     
     # Choosing the best parents
     # Building a dicionary with the population vectors and its fitness values
