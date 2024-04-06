@@ -14,28 +14,24 @@ class Population:
 
     def evaluate_fitness(self, fitness_function):
         # Evaluatig all the chromosomes' fitness in the population
-        for chromosome in self.chromosomes:
-            # print('chromosome: ', chromosome)
-            chromosome_fitness = fitness_function(chromosome, self.objective_phrase)
-            # print('chromosome fitness: ', chromosome_fitness)
-            if chromosome_fitness > self.best_fitness:
-                self.best_fitness = chromosome_fitness
-                self.best_individual = chromosome
+        fitness_values = np.apply_along_axis(fitness_function, 1, self.chromosomes, objective_phrase=self.objective_phrase)
+        max_fitness_index = np.argmax(fitness_values)
+
+        if fitness_values[max_fitness_index] > self.best_fitness:
+            self.best_fitness = fitness_values[max_fitness_index]
+            self.best_individual = self.chromosomes[max_fitness_index]
         
 
     def parents_determination(self, fitness_function):
         fitness_values = np.apply_along_axis(fitness_function, 1, self.chromosomes, objective_phrase=Objective_phrase)
 
         dict_fitness_values_population ={}
-        # print('chromosomes', self.chromosomes)
         for chromosome,fitness_value in zip(self.chromosomes, fitness_values):
-            # print('chromosome.individual',chromosome.individual)
             dict_fitness_values_population[tuple(chromosome)] = fitness_value
         
         dict_fitness_values_population = dict(sorted(dict_fitness_values_population.items(), key=lambda item: item[1], reverse=True))
 
         parents = np.array(list(dict_fitness_values_population.keys())[:self.num_parents])
-        # print('There are {} parents'.format(len(parents)))
 
         # Reshape parents array to ensure it has 3D structure
         parents = parents.reshape(-1, len(parents), self.chromosome_length)
@@ -43,11 +39,10 @@ class Population:
         return parents
 
     def mutation(self, chromosome):
-        # print('chromosome',chromosome)
         mutated_chromosome = chromosome.copy()
-        for i in range(self.chromosome_length):
-            if np.random.rand() < self.mutation_rate:
-                mutated_chromosome[i] = np.random.randint(0, self.vocab_size) 
+        mask = np.random.rand(*chromosome.shape) < self.mutation_rate # Gives an array with the shape of the chromosome of true's and false's
+        mutated_values = np.random.randint(0, self.vocab_size, size=chromosome.shape) # Generates an array with the shape of the chromosome with random values 
+        mutated_chromosome[mask] = mutated_values[mask] # Where the mask is true, the chromosome values are substituted with the generated array
         
         return mutated_chromosome
 
@@ -55,8 +50,6 @@ class Population:
             # Initialize empty offspring array
         offspring = np.empty((0, self.chromosome_length))
         while len(offspring) < self.population_size:
-            # print('population size: ',population_size)
-            # print('There are {} offspring'.format(len(offspring)))
             # Perform multiple crossovers until desired number of offspring is reached
             # Perform crossover (single-point crossover)
             # Choosing the point of crossover
@@ -78,13 +71,7 @@ class Population:
             offspring_1_2 =np.concatenate((offspring_1,offspring_2), axis=0)
             offspring = np.concatenate((offspring, offspring_1_2), axis=0)
 
-            mutated_offspring = np.empty((0, self.chromosome_length))
-            for child in offspring:
-                # print('Old chromosome: ', child)
-                child = Population.mutation(self, child)
-                child = child.reshape(1, -1) # Needed for the concatenation
-                # print('New chromosome',child)
-                mutated_offspring =np.concatenate((mutated_offspring,child), axis=0)
+            mutated_offspring = self.mutation(offspring)
 
         return mutated_offspring
         
@@ -105,29 +92,18 @@ class GA:
         self.written_solutions = []
 
     def optimize(self, fitness_function):
-        # print('self.population: ', self.population)
-        # for chromosome in self.population.chromosomes:
-            # print('chromosome')
-            # print(chromosome)
-
 
         for generation in range(self.num_generations):
             print('Generation: ', generation)
 
-            # print('self.population:', self.population.chromosomes)
-
             # Determine the parents for the next population
             parents = Population.parents_determination(self.population, fitness_function)
-            # print('parents: ', parents)
 
             # Determine current population's offspring 
             offspring = Population.crossover(self.population, parents)
-            # print('offspring', len(offspring), offspring)
 
             # Updating the population
-            # print('Old self.population.chromosomes:', self.population.chromosomes)
             self.population.chromosomes = offspring
-            # print('New self.population.chromosomes:', self.population.chromosomes)
 
             # Updates 
             Population.evaluate_fitness(self.population, fitness_function)
@@ -159,8 +135,6 @@ encode = lambda s: [stoi[c] for c in s] # encoder: take a string, output a list 
 decode = lambda l: ''.join([itos[i] for i in l]) # decoder: take a list of integers, output a string
 
 def fitness_function(chromosome, objective_phrase):
-    # print('phrase, encode(objective_phrase)')
-    # print(chromosome, encode(objective_phrase))
     sum_phrase = 0
     for i,k in zip(chromosome, encode(objective_phrase)):
         if i == k:
