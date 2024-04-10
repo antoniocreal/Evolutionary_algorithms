@@ -17,15 +17,20 @@ upper_triangle = np.random.randint(0, max_distance, size=(n_cities, n_cities))
 
 # Make the matrix symmetric by copying the upper triangle to the lower triangle
 distance_matrix = np.triu(upper_triangle) + np.triu(upper_triangle, 1).T
-# print("Distance Matrix (symmetric):")
-# print(distance_matrix)
+print("Distance Matrix (symmetric):")
+print(distance_matrix)
+
+# print('distance_matrix[0]',distance_matrix[0])
 
 # Initialize pheromone trails
 pheromone_matrix = np.ones_like(distance_matrix) / np.mean(distance_matrix)
 print('pheromone_matrix', pheromone_matrix)
 print('pheromone_matrix', np.sum(pheromone_matrix), 'np.mean(distance_matrix)', np.mean(distance_matrix) )
+
+# print('pheromone_matrix[0]',pheromone_matrix[0])
+
 # print(np.ones_like(distance_matrix))
-a
+
 # Ant Colony Optimization algorithm
 for iteration in range(num_iterations):
     ant_tours = []
@@ -46,13 +51,16 @@ for iteration in range(num_iterations):
             # alpha is a parameter that controls the relative importance of pheromone information compared to heuristic information.
             # distance_matrix[current_city] represents the distances from the current city to the candidate cities
             # beta is a parameter that controls the relative importance of heuristic information compared to pheromone information
+            print('pheromone_matrix[current_city]',pheromone_matrix[current_city])
+            print('distance_matrix[current_city]',distance_matrix[current_city])
+            a
             print('probabilities', probabilities)
             print('sum(probabilities)', sum(probabilities))
-
             a
-
             probabilities /= np.sum(probabilities)
             print('probabilities', probabilities)
+            print('sum(probabilities)', sum(probabilities))
+            a
             
             # Choose the next city based on the probabilities
             next_city = np.random.choice(range(len(distance_matrix)), p=probabilities)
