@@ -38,33 +38,38 @@ for iteration in range(num_iterations):
         # Initialize ant's tour
         tour = []
         tour.append(np.random.randint(0,n_cities))  # Start from a random city
-        print('tour',tour)
+        # print('tour',tour)
         current_city = 0
         
         # Build tour
         while len(tour) < len(distance_matrix):
-            print('len(tour)', len(tour))
-            print('len(distance_matrix)',len(distance_matrix))
+            # print('len(tour)', len(tour))
+            # print('len(distance_matrix)',len(distance_matrix))
             # Calculate probabilities for the next city
-            probabilities = (pheromone_matrix[current_city] ** alpha) * ((1 / (distance_matrix[current_city] + 1e-10)) ** beta)
+            probabilities = (pheromone_matrix[current_city] ** alpha) * ((1 / (distance_matrix[current_city]) + 1) ** beta)
             # pheromone_matrix[current_city] represents the pheromone levels on the edges departing from the current city
             # alpha is a parameter that controls the relative importance of pheromone information compared to heuristic information.
             # distance_matrix[current_city] represents the distances from the current city to the candidate cities
             # beta is a parameter that controls the relative importance of heuristic information compared to pheromone information
-            print('pheromone_matrix[current_city]',pheromone_matrix[current_city])
-            print('distance_matrix[current_city]',distance_matrix[current_city])
-            a
-            print('probabilities', probabilities)
-            print('sum(probabilities)', sum(probabilities))
-            a
+            # print('pheromone_matrix[current_city]',pheromone_matrix[current_city])
+            # print('distance_matrix[current_city]',distance_matrix[current_city])
+
+            # print('probabilities', probabilities)
+            # print('sum(probabilities)', sum(probabilities))
+
             probabilities /= np.sum(probabilities)
             print('probabilities', probabilities)
-            print('sum(probabilities)', sum(probabilities))
-            a
+            # print('sum(probabilities)', sum(probabilities))
             
             # Choose the next city based on the probabilities
-            next_city = np.random.choice(range(len(distance_matrix)), p=probabilities)
-            print('next_city', next_city)
+            Possibilities = np.setdiff1d(np.arange(len(distance_matrix)), tour)  # Exclude visited cities
+            Remaining_cities_probabilities = probabilities[Possibilities]
+            print('Remaining_cities_probabilities',Remaining_cities_probabilities)
+            Remaining_cities_probabilities /= np.sum(Remaining_cities_probabilities)
+            print('tour', tour, 'Possibilities',Possibilities)
+            print('Remaining_cities_probabilities', Remaining_cities_probabilities)
+            next_city = np.random.choice(Possibilities, p=Remaining_cities_probabilities)
+            # print('next_city', next_city)
             
             # Move to the next city
             tour.append(next_city)
@@ -72,6 +77,7 @@ for iteration in range(num_iterations):
         
         # Add the tour to the list of ant tours
         ant_tours.append(tour)
+        print('tour', tour)
     
     # Update pheromone trails
     pheromone_matrix *= (1 - evaporation_rate)  # Evaporation
