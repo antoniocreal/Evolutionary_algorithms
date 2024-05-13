@@ -11,7 +11,7 @@ This repository contains implementations of various evolutionary algorithms, inc
   - **Match string case fitness function**:
       - `Match_String_Case.py`: Sequential implementation of Genetic Algorithm for string matching.
       - `Match_String_Case_OOP_format.py`; `Match_String_Case_OOP_format_2.py`: 2 different Object-oriented implementation of Genetic Algorithm for string matching.
-      - 
+        
   - **Complex optimization function**:
       - `Complex_Optimization_equation.py`: Sequential implementation of Genetic Algorithm for a complex optimization function
 
