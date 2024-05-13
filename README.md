@@ -3,6 +3,8 @@
 This repository contains implementations of various evolutionary algorithms, including Genetic Algorithms (GA), Ant Colony Optimization (ACO), and Particle Swarm Optimization (PSO). Each algorithm is provided with both sequential and object-oriented programming (OOP) implementations for better understanding and flexibility. 
 All are designed from scratch using nothing but numpy to really understand the mechanisms and logic behind the algorithms.
 
+The theoretical notes are also available, made mostly through LLM's and some personal notes on [`Notes`](https://github.com/antoniocreal/Evolutionary_algorithms/blob/main/Notes.odt)
+
 ## Folder Structure
 - **Genetic Algoritm**: This folder contains implementations of Genetic Algorithms.
 
