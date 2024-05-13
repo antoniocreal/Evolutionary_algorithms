@@ -1,6 +1,7 @@
 
 # Evolutionary Algorithms Repository
-This repository contains implementations of various evolutionary algorithms, including Genetic Algorithms (GA), Ant Colony Optimization (ACO), and Particle Swarm Optimization (PSO). Each algorithm is provided with both sequential and object-oriented programming (OOP) implementations for better understanding and flexibility. All are designed from scratch using nothing but numpy to really understand the mechanisms and logic behind the algorithms.
+This repository contains implementations of various evolutionary algorithms, including Genetic Algorithms (GA), Ant Colony Optimization (ACO), and Particle Swarm Optimization (PSO). Each algorithm is provided with both sequential and object-oriented programming (OOP) implementations for better understanding and flexibility. 
+All are designed from scratch using nothing but numpy to really understand the mechanisms and logic behind the algorithms.
 
 ## Folder Structure
 - **Genetic Algoritm**: This folder contains implementations of Genetic Algorithms.
