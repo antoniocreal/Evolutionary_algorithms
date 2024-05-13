@@ -7,7 +7,7 @@ All are designed from scratch using nothing but numpy to really understand the m
 - **Genetic Algoritm**: This folder contains implementations of Genetic Algorithms.
 
   - **Sum of vectors fitness function**:
-    - `[a link](Genetic Algorithm/Fitness_function_vectors_sum.py) Fitness_function_vectors_sum.py`: Implementation of Genetic Algorithm for optimizing the sum of vectors fitness function in a sequential manner.
+    - `[Fitness_function_vectors_sum.py](Genetic Algorithm/Fitness_function_vectors_sum.py)`: Implementation of Genetic Algorithm for optimizing the sum of vectors fitness function in a sequential manner.
   
   - **Match string case fitness function**:
       - `Match_String_Case.py`: Sequential implementation of Genetic Algorithm for string matching.
