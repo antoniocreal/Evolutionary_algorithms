@@ -11,6 +11,9 @@ This repository contains implementations of various evolutionary algorithms, inc
   - **Match string case fitness function**:
       - `Match_String_Case.py`: Sequential implementation of Genetic Algorithm for string matching.
       - `Match_String_Case_OOP_format.py`; `Match_String_Case_OOP_format_2.py`: 2 different Object-oriented implementation of Genetic Algorithm for string matching.
+      - 
+  - **Complex optimization function**:
+      - `Complex_Optimization_equation.py`: Sequential implementation of Genetic Algorithm for a complex optimization function
 
 - **Ant Colony Optimization**: Here, you'll find implementations of Ant Colony Optimization.
 
@@ -19,5 +22,5 @@ This repository contains implementations of various evolutionary algorithms, inc
     - `TravellingSalesman_ACO_OOP_format.py`: Object-oriented implementation of Ant Colony Optimization for solving the Travelling Salesman Problem.
 
 - **Particle Swarm Optimizagion**: This folder contains an implementation of Particle Swarm Optimization.
-  
-  - `PSO_Simple_fitness_function.py`: Implementation of Particle Swarm Optimization in a sequential manner.
+  - **Optimization function**:
+    - `PSO_Simple_fitness_function.py`: Implementation of Particle Swarm Optimization in a sequential manner.
